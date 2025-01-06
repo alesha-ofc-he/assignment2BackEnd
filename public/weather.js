@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const API_KEY = 'f99b11d736cbef851acdf29b4c4b2c4b';
 
-router.get('/', async (req, res) => {
+router.post('/getWeather', async (req, res) => {
     const city = req.query.city;
     const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
@@ -35,6 +35,6 @@ router.get('/', async (req, res) => {
     catch(err) {
         return res.status(400).json({ message: "Something went wrong"});
     }
-})
+});
 
 module.exports = router;

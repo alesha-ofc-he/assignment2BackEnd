@@ -1,8 +1,16 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
+const weather = require('./public/weather.js');
+const geolocation = require('./public/geolocation.js');
+
+app.get('/', (req, res) => {
+    res.sendFile('/public/index.html');
+});
 
 app.use('/weather', weather);
+
+app.use('/geo', geolocation);
 
 // Start the server
 app.listen(PORT, () => {

@@ -1,0 +1,28 @@
+<!-- search.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Search</title>
+    <script src="search.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center h-screen bg-blue-100">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6">Weather App</h1>
+        <input 
+            id="cityInput" 
+            type="text" 
+            placeholder="Type your city" 
+            class="p-3 rounded-lg w-80 border-2 border-gray-300 focus:outline-none focus:border-blue-500"
+        >
+        <button 
+            id="searchButton" 
+            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+            Search
+        </button>
+    </div>
+</body>
+</html>

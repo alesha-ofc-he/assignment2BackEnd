@@ -3,20 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Harmony - Weather & Music</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="weather-container">
-        <h1>Weather Information</h1>
-        <img id="weather-icon" class="weather-icon" alt="Weather Icon">
-        <p><strong>Temperature:</strong> <span id="temperature">Loading...</span> °C</p>
-        <p><strong>Feels Like:</strong> <span id="feels-like">Loading...</span> °C</p>
-        <p><strong>Description:</strong> <span id="description">Loading...</span></p>
-        <p><strong>Humidity:</strong> <span id="humidity">Loading...</span> %</p>
-        <p><strong>Pressure:</strong> <span id="pressure">Loading...</span> hPa</p>
-        <p><strong>Wind Speed:</strong> <span id="wind-speed">Loading...</span> m/s</p>
+<body class="bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 min-h-screen flex items-center justify-center p-4">
+    <div class="container max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden">
+        <div class="flex flex-col md:flex-row">
+            <!-- Weather Section -->
+            <div class="weather-container p-8 md:w-1/2">
+                <h2 class="text-3xl font-bold mb-6 text-white">Weather</h2>
+                <div class="bg-white bg-opacity-20 rounded-2xl p-6 transform transition-all duration-300 hover:scale-105">
+                    <img id="weather-icon" class="weather-icon mx-auto mb-4" alt="Weather Icon">
+                    <div class="text-white">
+                        <p class="text-4xl font-bold mb-2"><span id="temperature">--</span>°C</p>
+                        <p class="text-xl mb-4"><span id="description">--</span></p>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <p><i class="fas fa-thermometer-half mr-2"></i>Feels: <span id="feels-like">--</span>°C</p>
+                            <p><i class="fas fa-tint mr-2"></i>Humidity: <span id="humidity">--</span>%</p>
+                            <p><i class="fas fa-compress-alt mr-2"></i>Pressure: <span id="pressure">--</span> hPa</p>
+                            <p><i class="fas fa-wind mr-2"></i>Wind: <span id="wind-speed">--</span> m/s</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Music Player Section -->
+            <div class="music-container p-8 md:w-1/2 bg-white bg-opacity-5">
+                <h2 class="text-3xl font-bold mb-6 text-white">Music</h2>
+                <div class="mb-6">
+                    <div class="flex gap-2">
+                        <input type="text" id="search-input" placeholder="Search for a track" 
+                               class="flex-1 p-3 bg-white bg-opacity-20 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-300">
+                        <button onclick="searchTracks()" 
+                                class="bg-purple-500 text-white px-6 py-3 rounded-xl hover:bg-purple-600 transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="search-results" class="mt-4 max-h-60 overflow-y-auto rounded-xl bg-white bg-opacity-10"></div>
+                </div>
+
+                <div id="player" class="hidden transform transition-all duration-500 scale-95 opacity-0">
+                    <div class="flex flex-col items-center">
+                        <img id="album-cover" class="w-48 h-48 rounded-2xl shadow-lg mb-6" alt="Album Cover">
+                        <h3 id="song-title" class="text-xl font-semibold text-center text-white mb-2"></h3>
+                        <p id="artist-name" class="text-gray-300 mb-6"></p>
+                        
+                        <div class="w-full max-w-md space-y-4">
+                            <div class="flex items-center justify-center gap-6">
+                                <button id="prev-button" class="text-2xl text-white hover:text-purple-300 transition-colors">
+                                    <i class="fas fa-step-backward"></i>
+                                </button>
+                                <button id="play-pause" class="text-4xl text-white hover:text-purple-300 transition-colors">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button id="next-button" class="text-2xl text-white hover:text-purple-300 transition-colors">
+                                    <i class="fas fa-step-forward"></i>
+                                </button>
+                            </div>
+                            <div class="w-full flex items-center gap-2">
+                                <span id="current-time" class="text-sm text-gray-300">0:00</span>
+                                <input type="range" id="progress-bar" min="0" max="100" value="0" 
+                                       class="w-full h-2 bg-white bg-opacity-20 rounded-lg appearance-none cursor-pointer">
+                                <span id="duration" class="text-sm text-gray-300">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+

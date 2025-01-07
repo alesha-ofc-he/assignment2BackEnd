@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .progress-bar {
+            transition: width 0.1s linear;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4a4a4a;
+            border-radius: 3px;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black text-white min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-8 flex-grow overflow-hidden">
+        <h1 class="text-5xl font-bold mb-8 text-center bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent animate-pulse">Spotify Player</h1>
+        <div id="login-container" class="mb-8 text-center fade-in">
+            <a href="/spotify/login" class="px-10 py-4 bg-gradient-to-r from-green-400 to-blue-500 rounded-full hover:from-green-500 hover:to-blue-600 transition-all duration-300 inline-block transform hover:scale-105 shadow-lg text-xl font-semibold">Login with Spotify</a>
+        </div>
+        <div id="player-container" class="hidden fade-in">
+            <div class="mb-8 relative">
+                <input type="text" id="search-input" placeholder="Search for a track" class="w-full p-4 pl-12 rounded-full bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 shadow-md">
+                <svg class="w-6 h-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <button id="search-button" class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-green-500 rounded-full hover:bg-green-600 transition-all duration-300 shadow-md">Search</button>
+            </div>
+            <div id="search-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto custom-scrollbar" style="max-height: calc(100vh - 300px);"></div>
+        </div>
+    </div>
+    <div id="fixed-player" class="fixed bottom-0 left-0 right-0 glass-effect p-4 hidden shadow-lg">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4 flex-1">
+                <img id="current-track-image" src="/placeholder.svg" alt="Album cover" class="w-16 h-16 rounded-lg shadow-md">
+                <div>
+                    <h2 id="current-track-name" class="text-lg font-semibold truncate"></h2>
+                    <p id="current-track-artist" class="text-sm text-gray-400 truncate"></p>
+                </div>
+            </div>
+            <div class="flex-1 max-w-xl">
+                <div class="flex justify-center items-center space-x-6 mb-2">
+                    <button id="previous-button" class="text-2xl hover:text-green-500 transition-colors duration-300 focus:outline-none transform hover:scale-110">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="play-pause-button" class="text-4xl hover:text-green-500 transition-colors duration-300 focus:outline-none transform hover:scale-110">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                    <button id="next-button" class="text-2xl hover:text-green-500 transition-colors duration-300 focus:outline-none transform hover:scale-110">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span id="current-time" class="text-xs text-gray-400 w-10 text-right">0:00</span>
+                    <div class="flex-1 bg-gray-700 h-2 rounded-full">
+                        <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full progress-bar" style="width: 0%;"></div>
+                    </div>
+                    <span id="total-time" class="text-xs text-gray-400 w-10">0:00</span>
+                </div>
+            </div>
+            <div class="flex-1 flex justify-end items-center">
+                <input type="range" id="volume-slider" min="0" max="100" value="100" class="w-24 accent-green-500">
+            </div>
+        </div>
+    </div>
+    <script>
+        let player;
+        let deviceId;
+        let accessToken;
+        let currentTrack;
+
+        async function initializePlayer() {
+            try {
+                const response = await fetch('/spotify/token');
+                const data = await response.json();
+                accessToken = data.token;
+
+                if (!accessToken) {
+                    document.getElementById('login-container').classList.remove('hidden');
+                    document.getElementById('player-container').classList.add('hidden');
+                    return;
+                }
+
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('player-container').classList.remove('hidden');
+                document.getElementById('fixed-player').classList.remove('hidden');
+
+                player = new Spotify.Player({
+                    name: 'Web Playback SDK Quick Start Player',
+                    getOAuthToken: cb => { cb(accessToken); }
+                });
+
+                player.addListener('initialization_error', ({ message }) => { console.error(message); });
+                player.addListener('authentication_error', ({ message }) => { console.error(message); });
+                player.addListener('account_error', ({ message }) => { console.error(message); });
+                player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+                player.addListener('player_state_changed', state => {
+                    if (state) {
+                        currentTrack = state.track_window.current_track;
+                        updatePlayerInfo(state);
+                    }
+                });
+
+                player.addListener('ready', ({ device_id }) => {
+                    console.log('Ready with Device ID', device_id);
+                    deviceId = device_id;
+                });
+
+                player.addListener('not_ready', ({ device_id }) => {
+                    console.log('Device ID has gone offline', device_id);
+                });
+
+                player.connect();
+            } catch (error) {
+                console.error('Failed to initialize player:', error);
+            }
+        }
+
+        window.onSpotifyWebPlaybackSDKReady = initializePlayer;
+
+        document.getElementById('search-button').addEventListener('click', async () => {
+            const query = document.getElementById('search-input').value;
+            const response = await fetch(`/spotify/search?query=${encodeURIComponent(query)}`);
+            const tracks = await response.json();
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+            tracks.forEach((track, index) => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-md fade-in';
+                trackElement.style.animationDelay = `${index * 50}ms`;
+                trackElement.innerHTML = `
+                    <img src="${track.album.images[0].url}" alt="${track.name}" class="w-full mb-2 rounded-lg shadow">
+                    <h3 class="font-semibold text-lg truncate">${track.name}</h3>
+                    <p class="text-gray-400 truncate">${track.artists.map(artist => artist.name).join(', ')}</p>
+                    <p class="text-gray-500 text-sm mt-1">Album: ${track.album.name}</p>
+                    <p class="text-gray-500 text-sm">Duration: ${formatDuration(track.duration_ms)}</p>
+                `;
+                trackElement.addEventListener('click', () => {
+                    playTrack(track.uri);
+                });
+                resultsContainer.appendChild(trackElement);
+            });
+        });
+
+        async function playTrack(uri) {
+            await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ uris: [uri] }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            });
+        }
+
+        function updatePlayerInfo(state) {
+            const trackName = document.getElementById('current-track-name');
+            const artistName = document.getElementById('current-track-artist');
+            const trackImage = document.getElementById('current-track-image');
+            const playPauseButton = document.getElementById('play-pause-button');
+            const progressBar = document.getElementById('progress-bar');
+            const currentTimeSpan = document.getElementById('current-time');
+            const totalTimeSpan = document.getElementById('total-time');
+
+            if (currentTrack) {
+                trackName.textContent = currentTrack.name;
+                artistName.textContent = currentTrack.artists.map(artist => artist.name).join(', ');
+                trackImage.src = currentTrack.album.images[0].url;
+            }
+
+            playPauseButton.innerHTML = state.paused 
+                ? '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+                : '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+
+            const currentTime = state.position;
+            const totalTime = currentTrack.duration_ms;
+            const progress = (currentTime / totalTime) * 100;
+
+            progressBar.style.width = `${progress}%`;
+            currentTimeSpan.textContent = formatDuration(currentTime);
+            totalTimeSpan.textContent = formatDuration(totalTime);
+        }
+
+        function formatDuration(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        document.getElementById('play-pause-button').addEventListener('click', () => {
+            player.togglePlay();
+        });
+
+        document.getElementById('next-button').addEventListener('click', () => {
+            player.nextTrack();
+        });
+
+        document.getElementById('previous-button').addEventListener('click', () => {
+            player.previousTrack();
+        });
+
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            player.setVolume(e.target.value / 100);
+        });
+    </script>
+</body>
+</html>
+

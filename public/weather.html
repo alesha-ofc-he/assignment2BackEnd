@@ -1,30 +1,46 @@
-<!-- weather.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Info</title>
-    <script src="weather.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="h-screen grid grid-cols-2 gap-4">
-        <!-- Левая часть: Показатели погоды -->
-        <div class="bg-white shadow-lg rounded-lg p-6 m-6">
-            <h2 class="text-2xl font-bold mb-4">Weather Details</h2>
-            <ul class="text-lg text-gray-700 space-y-2">
-                <li>Temperature: <span id="temperature" class="font-semibold">-</span>°C</li>
-                <li>Feels Like: <span id="feels_like" class="font-semibold">-</span>°C</li>
-                <li>Min Temperature: <span id="temp_min" class="font-semibold">-</span>°C</li>
-                <li>Max Temperature: <span id="temp_max" class="font-semibold">-</span>°C</li>
-                <li>Humidity: <span id="humidity" class="font-semibold">-</span>%</li>
-                <li>Pressure: <span id="pressure" class="font-semibold">-</span> hPa</li>
-            </ul>
+<body class="bg-gradient-to-br from-blue-400 to-purple-500 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 id="cityTitle" class="text-4xl font-bold text-center mb-8 text-white animate-fadeIn"></h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg p-6 rounded-lg shadow-lg animate-fadeIn">
+                <h2 class="text-2xl font-bold mb-4 text-white">Weather Details</h2>
+                <div class="flex items-center justify-center mb-4">
+                    <img id="weather-icon" src="/placeholder.svg" alt="Weather icon" class="w-20 h-20">
+                    <span id="description" class="text-white text-xl ml-4"></span>
+                </div>
+                <ul class="space-y-2 text-white">
+                    <li>Temperature: <span id="temperature" class="font-semibold"></span>°C</li>
+                    <li>Feels Like: <span id="feels_like" class="font-semibold"></span>°C</li>
+                    <li>Min Temperature: <span id="temp_min" class="font-semibold"></span>°C</li>
+                    <li>Max Temperature: <span id="temp_max" class="font-semibold"></span>°C</li>
+                    <li>Humidity: <span id="humidity" class="font-semibold"></span>%</li>
+                    <li>Pressure: <span id="pressure" class="font-semibold"></span> hPa</li>
+                </ul>
+            </div>
+            <div id="map" class="h-96 rounded-lg shadow-lg animate-fadeIn"></div>
         </div>
-
-        <!-- Правая часть: Карта -->
-        <div id="map" class="m-6 bg-gray-200 rounded-lg shadow-lg"></div>
+        <a href="/search.html" class="block mt-8 text-center text-white hover:underline animate-fadeIn">Back to Search</a>
     </div>
+    <script src="/weather.js"></script>
 </body>
 </html>
+

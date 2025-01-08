@@ -1,28 +1,54 @@
-<!-- search.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>City Search</title>
-    <script src="search.js" defer></script>
+    <title>Weather Finder</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script src="search.js" defer></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .search-icon {
+            top: 50%;
+            transform: translateY(-50%);
+            right: 1rem;
+        }
+    </style>
 </head>
-<body class="flex items-center justify-center h-screen bg-blue-100">
-    <div class="text-center">
-        <h1 class="text-4xl font-bold text-gray-800 mb-6">Weather App</h1>
-        <input 
-            id="cityInput" 
-            type="text" 
-            placeholder="Type your city" 
-            class="p-3 rounded-lg w-80 border-2 border-gray-300 focus:outline-none focus:border-blue-500"
-        >
-        <button 
-            id="searchButton" 
-            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-            Search
-        </button>
+<body class="flex items-center justify-center h-screen bg-gradient-to-br from-blue-400 to-purple-500">
+    <div class="text-center glass p-12 w-full max-w-lg mx-4 animate-fadeIn">
+        <h1 class="text-6xl font-bold text-white mb-12">Weather Finder</h1>
+        <form id="searchForm" class="flex flex-col items-center">
+            <div class="relative w-full">
+                <input 
+                    id="cityInput" 
+                    type="text" 
+                    placeholder="Enter city name" 
+                    class="p-4 rounded-full w-full border-2 border-white bg-white bg-opacity-20 focus:outline-none focus:border-blue-300 text-white placeholder-white text-xl transition duration-300"
+                    required
+                >
+                <button 
+                    type="submit"
+                    class="absolute search-icon bg-blue-500 text-white rounded-full p-3 hover:bg-blue-600 transition duration-300 flex items-center justify-center"
+                >
+                    <i class="fas fa-search text-lg"></i>
+                </button>
+            </div>
+        </form>
     </div>
 </body>
 </html>
+

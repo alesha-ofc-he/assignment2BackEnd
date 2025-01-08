@@ -1,40 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const API_KEY = 'f99b11d736cbef851acdf29b4c4b2c4b';
+const fetch = require('node-fetch');
+const API_KEY = process.env.WEATHER_API_KEY;
 
-router.get('/getWeather', async (req, res) => {
+router.get('/', async (req, res) => {
     const city = req.query.city;
-    const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
-    try  {
-        const response = await fetch(URL);
+    if (!city) {
+        return res.status(400).json({ error: 'City parameter is required' });
+    }
+
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`);
+        
         if (!response.ok) {
-            throw new Error("Something went wrong");
+            throw new Error(`Weather API error: ${response.status}`);
         }
 
         const data = await response.json();
-
-        console.log(data);
-
-        const temperature = await data.main.temperature;
-        const feels_like = await data.main.feels_like;
-        const temp_min = await data.main.temp_min;
-        const temp_max = await data.main.temp_max;
-        const humidity = await data.main.humidity;
-        const pressure = await data.main.pressure;
-
+        
         res.json({
-            temperature: temperature,
-            feels_like: feels_like,
-            temp_min: temp_min,
-            temp_max: temp_max,
-            humidity: humidity,
-            pressure: pressure
+            temperature: Math.round(data.main.temp * 10) / 10,
+            feels_like: Math.round(data.main.feels_like * 10) / 10,
+            temp_min: Math.round(data.main.temp_min * 10) / 10,
+            temp_max: Math.round(data.main.temp_max * 10) / 10,
+            humidity: data.main.humidity,
+            pressure: data.main.pressure,
+            description: data.weather[0].description,
+            icon: data.weather[0].icon
         });
-    }
-    catch(err) {
-        return res.status(400).json({ message: "Something went wrong"});
+    } catch (err) {
+        console.error("Error fetching weather:", err);
+        res.status(500).json({ error: 'Failed to fetch weather data' });
     }
 });
 
 module.exports = router;
+
